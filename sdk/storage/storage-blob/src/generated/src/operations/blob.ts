@@ -606,6 +606,31 @@ export class Blob {
       getAccountInfoOperationSpec,
       callback) as Promise<Models.BlobGetAccountInfoResponse>;
   }
+
+  /**
+   * The QuickQuery operation enables users to select/project on blob data by providing simple query
+   * expressions.
+   * @param [options] The optional parameters
+   * @returns Promise<Models.BlobQuickQueryResponse>
+   */
+  quickQuery(options?: Models.BlobQuickQueryOptionalParams): Promise<Models.BlobQuickQueryResponse>;
+  /**
+   * @param callback The callback
+   */
+  quickQuery(callback: coreHttp.ServiceCallback<void>): void;
+  /**
+   * @param options The optional parameters
+   * @param callback The callback
+   */
+  quickQuery(options: Models.BlobQuickQueryOptionalParams, callback: coreHttp.ServiceCallback<void>): void;
+  quickQuery(options?: Models.BlobQuickQueryOptionalParams | coreHttp.ServiceCallback<void>, callback?: coreHttp.ServiceCallback<void>): Promise<Models.BlobQuickQueryResponse> {
+    return this.client.sendOperationRequest(
+      {
+        options
+      },
+      quickQueryOperationSpec,
+      callback) as Promise<Models.BlobQuickQueryResponse>;
+  }
 }
 
 // Operation Specifications
@@ -618,6 +643,7 @@ const downloadOperationSpec: coreHttp.OperationSpec = {
   ],
   queryParameters: [
     Parameters.snapshot,
+    Parameters.versionId,
     Parameters.timeoutInSeconds
   ],
   headerParameters: [
@@ -671,6 +697,7 @@ const getPropertiesOperationSpec: coreHttp.OperationSpec = {
   ],
   queryParameters: [
     Parameters.snapshot,
+    Parameters.versionId,
     Parameters.timeoutInSeconds
   ],
   headerParameters: [
@@ -706,6 +733,7 @@ const deleteMethodOperationSpec: coreHttp.OperationSpec = {
   ],
   queryParameters: [
     Parameters.snapshot,
+    Parameters.versionId,
     Parameters.timeoutInSeconds
   ],
   headerParameters: [
@@ -1314,6 +1342,65 @@ const getAccountInfoOperationSpec: coreHttp.OperationSpec = {
     default: {
       bodyMapper: Mappers.StorageError,
       headersMapper: Mappers.BlobGetAccountInfoHeaders
+    }
+  },
+  isXML: true,
+  serializer
+};
+
+const quickQueryOperationSpec: coreHttp.OperationSpec = {
+  httpMethod: "POST",
+  path: "{containerName}/{blob}",
+  urlParameters: [
+    Parameters.url
+  ],
+  queryParameters: [
+    Parameters.snapshot,
+    Parameters.timeoutInSeconds,
+    Parameters.comp12
+  ],
+  headerParameters: [
+    Parameters.version,
+    Parameters.requestId,
+    Parameters.leaseId0,
+    Parameters.encryptionKey,
+    Parameters.encryptionKeySha256,
+    Parameters.encryptionAlgorithm,
+    Parameters.ifModifiedSince,
+    Parameters.ifUnmodifiedSince,
+    Parameters.ifMatch,
+    Parameters.ifNoneMatch
+  ],
+  requestBody: {
+    parameterPath: [
+      "options",
+      "queryRequest"
+    ],
+    mapper: Mappers.QueryRequest
+  },
+  contentType: "application/xml; charset=utf-8",
+  responses: {
+    200: {
+      bodyMapper: {
+        serializedName: "parsedResponse",
+        type: {
+          name: "Stream"
+        }
+      },
+      headersMapper: Mappers.BlobQuickQueryHeaders
+    },
+    206: {
+      bodyMapper: {
+        serializedName: "parsedResponse",
+        type: {
+          name: "Stream"
+        }
+      },
+      headersMapper: Mappers.BlobQuickQueryHeaders
+    },
+    default: {
+      bodyMapper: Mappers.StorageError,
+      headersMapper: Mappers.BlobQuickQueryHeaders
     }
   },
   isXML: true,

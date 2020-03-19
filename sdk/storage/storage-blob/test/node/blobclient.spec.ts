@@ -34,7 +34,7 @@ describe("BlobClient Node.js only", () => {
   let recorder: any;
 
   let blobServiceClient: BlobServiceClient;
-  beforeEach(async function() {
+  beforeEach(async function () {
     recorder = record(this, recorderEnvSetup);
     blobServiceClient = getBSU();
     containerName = recorder.getUniqueName("container");
@@ -46,7 +46,7 @@ describe("BlobClient Node.js only", () => {
     await blockBlobClient.upload(content, content.length);
   });
 
-  afterEach(async function() {
+  afterEach(async function () {
     await containerClient.delete();
     recorder.stop();
   });
@@ -209,6 +209,7 @@ describe("BlobClient Node.js only", () => {
 
     const copyURL = blobClient.url + "?" + sas;
     const result = await newBlobClient.syncCopyFromURL(copyURL);
+    assert.ok(result.versionId);
 
     const properties1 = await blobClient.getProperties();
     const properties2 = await newBlobClient.getProperties();

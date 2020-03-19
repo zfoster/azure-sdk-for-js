@@ -285,7 +285,7 @@ const stageBlockOperationSpec: coreHttp.OperationSpec = {
   queryParameters: [
     Parameters.blockId,
     Parameters.timeoutInSeconds,
-    Parameters.comp16
+    Parameters.comp17
   ],
   headerParameters: [
     Parameters.contentLength,
@@ -332,7 +332,7 @@ const stageBlockFromURLOperationSpec: coreHttp.OperationSpec = {
   queryParameters: [
     Parameters.blockId,
     Parameters.timeoutInSeconds,
-    Parameters.comp16
+    Parameters.comp17
   ],
   headerParameters: [
     Parameters.contentLength,
@@ -373,7 +373,7 @@ const commitBlockListOperationSpec: coreHttp.OperationSpec = {
   ],
   queryParameters: [
     Parameters.timeoutInSeconds,
-    Parameters.comp17
+    Parameters.comp18
   ],
   headerParameters: [
     Parameters.transactionalContentMD5,
@@ -429,7 +429,7 @@ const getBlockListOperationSpec: coreHttp.OperationSpec = {
     Parameters.snapshot,
     Parameters.listType,
     Parameters.timeoutInSeconds,
-    Parameters.comp17
+    Parameters.comp18
   ],
   headerParameters: [
     Parameters.version,

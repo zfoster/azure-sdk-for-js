@@ -382,7 +382,7 @@ const uploadPagesOperationSpec: coreHttp.OperationSpec = {
   ],
   queryParameters: [
     Parameters.timeoutInSeconds,
-    Parameters.comp12
+    Parameters.comp13
   ],
   headerParameters: [
     Parameters.contentLength,
@@ -437,7 +437,7 @@ const clearPagesOperationSpec: coreHttp.OperationSpec = {
   ],
   queryParameters: [
     Parameters.timeoutInSeconds,
-    Parameters.comp12
+    Parameters.comp13
   ],
   headerParameters: [
     Parameters.contentLength,
@@ -479,7 +479,7 @@ const uploadPagesFromURLOperationSpec: coreHttp.OperationSpec = {
   ],
   queryParameters: [
     Parameters.timeoutInSeconds,
-    Parameters.comp12
+    Parameters.comp13
   ],
   headerParameters: [
     Parameters.sourceUrl,
@@ -530,7 +530,7 @@ const getPageRangesOperationSpec: coreHttp.OperationSpec = {
   queryParameters: [
     Parameters.snapshot,
     Parameters.timeoutInSeconds,
-    Parameters.comp13
+    Parameters.comp14
   ],
   headerParameters: [
     Parameters.range0,
@@ -566,7 +566,7 @@ const getPageRangesDiffOperationSpec: coreHttp.OperationSpec = {
     Parameters.snapshot,
     Parameters.timeoutInSeconds,
     Parameters.prevsnapshot,
-    Parameters.comp13
+    Parameters.comp14
   ],
   headerParameters: [
     Parameters.prevSnapshotUrl,
@@ -672,7 +672,7 @@ const copyIncrementalOperationSpec: coreHttp.OperationSpec = {
   ],
   queryParameters: [
     Parameters.timeoutInSeconds,
-    Parameters.comp14
+    Parameters.comp15
   ],
   headerParameters: [
     Parameters.copySource,

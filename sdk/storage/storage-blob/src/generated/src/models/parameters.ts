@@ -345,7 +345,7 @@ export const comp12: coreHttp.OperationQueryParameter = {
     required: true,
     isConstant: true,
     serializedName: "comp",
-    defaultValue: 'page',
+    defaultValue: 'query',
     type: {
       name: "String"
     }
@@ -357,7 +357,7 @@ export const comp13: coreHttp.OperationQueryParameter = {
     required: true,
     isConstant: true,
     serializedName: "comp",
-    defaultValue: 'pagelist',
+    defaultValue: 'page',
     type: {
       name: "String"
     }
@@ -369,7 +369,7 @@ export const comp14: coreHttp.OperationQueryParameter = {
     required: true,
     isConstant: true,
     serializedName: "comp",
-    defaultValue: 'incrementalcopy',
+    defaultValue: 'pagelist',
     type: {
       name: "String"
     }
@@ -381,7 +381,7 @@ export const comp15: coreHttp.OperationQueryParameter = {
     required: true,
     isConstant: true,
     serializedName: "comp",
-    defaultValue: 'appendblock',
+    defaultValue: 'incrementalcopy',
     type: {
       name: "String"
     }
@@ -393,13 +393,25 @@ export const comp16: coreHttp.OperationQueryParameter = {
     required: true,
     isConstant: true,
     serializedName: "comp",
-    defaultValue: 'block',
+    defaultValue: 'appendblock',
     type: {
       name: "String"
     }
   }
 };
 export const comp17: coreHttp.OperationQueryParameter = {
+  parameterPath: "comp",
+  mapper: {
+    required: true,
+    isConstant: true,
+    serializedName: "comp",
+    defaultValue: 'block',
+    type: {
+      name: "String"
+    }
+  }
+};
+export const comp18: coreHttp.OperationQueryParameter = {
   parameterPath: "comp",
   mapper: {
     required: true,
@@ -853,7 +865,8 @@ export const include1: coreHttp.OperationQueryParameter = {
             "deleted",
             "metadata",
             "snapshots",
-            "uncommittedblobs"
+            "uncommittedblobs",
+            "versions"
           ]
         }
       }
@@ -1515,7 +1528,19 @@ export const version: coreHttp.OperationParameter = {
     required: true,
     isConstant: true,
     serializedName: "x-ms-version",
-    defaultValue: '2019-07-07',
+    defaultValue: '2019-12-12',
+    type: {
+      name: "String"
+    }
+  }
+};
+export const versionId: coreHttp.OperationQueryParameter = {
+  parameterPath: [
+    "options",
+    "versionId"
+  ],
+  mapper: {
+    serializedName: "versionid",
     type: {
       name: "String"
     }

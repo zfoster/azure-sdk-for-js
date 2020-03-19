@@ -18,6 +18,7 @@ export {
   BlobGetAccessControlHeaders,
   BlobGetAccountInfoHeaders,
   BlobGetPropertiesHeaders,
+  BlobQuickQueryHeaders,
   BlobReleaseLeaseHeaders,
   BlobRenameHeaders,
   BlobRenewLeaseHeaders,
@@ -29,5 +30,10 @@ export {
   BlobUndeleteHeaders,
   DataLakeStorageError,
   DataLakeStorageErrorError,
+  DelimitedTextConfiguration,
+  JsonTextConfiguration,
+  QueryRequest,
+  QuickQueryFormat,
+  QuickQuerySerialization,
   StorageError
 } from "../models/mappers";

@@ -178,7 +178,7 @@ const appendBlockOperationSpec: coreHttp.OperationSpec = {
   ],
   queryParameters: [
     Parameters.timeoutInSeconds,
-    Parameters.comp15
+    Parameters.comp16
   ],
   headerParameters: [
     Parameters.contentLength,
@@ -230,7 +230,7 @@ const appendBlockFromUrlOperationSpec: coreHttp.OperationSpec = {
   ],
   queryParameters: [
     Parameters.timeoutInSeconds,
-    Parameters.comp15
+    Parameters.comp16
   ],
   headerParameters: [
     Parameters.sourceUrl,
