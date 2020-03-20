@@ -1,6 +1,7 @@
 # Release History
 
 ## 12.2.0 (2020.05)
+
 - Added support for blob versioning.
 
 ## 12.1.1 (2020.03)
