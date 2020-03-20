@@ -39,7 +39,7 @@ describe("Encryption Scope", function () {
 
   let recorder: any;
 
-  before(function () {
+  before(async function () {
     if (!encryptionScopeName1 || !encryptionScopeName2) {
       this.skip();
     }
