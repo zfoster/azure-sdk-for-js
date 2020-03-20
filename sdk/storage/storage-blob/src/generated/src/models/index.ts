@@ -4366,6 +4366,17 @@ export interface BlobGetPropertiesHeaders {
    * blob was ever set.
    */
   accessTierChangedOn?: Date;
+  /**
+   * A DateTime value returned by the service that uniquely identifies the blob. The value of this
+   * header indicates the blob version, and may be used in subsequent requests to access this
+   * version of the blob.
+   */
+  versionId?: string;
+  /**
+   * The value of this header indicates whether version of this blob is a current version, see also
+   * x-ms-version-id header.
+   */
+  isCurrentVersion?: boolean;
   errorCode?: string;
 }
 
