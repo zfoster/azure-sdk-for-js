@@ -505,6 +505,7 @@ export interface BlobDownloadHeaders {
     };
     requestId?: string;
     version?: string;
+    versionId?: string;
 }
 
 // @public

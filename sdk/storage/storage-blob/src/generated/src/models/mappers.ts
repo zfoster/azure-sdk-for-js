@@ -3505,6 +3505,12 @@ export const BlobDownloadHeaders: coreHttp.CompositeMapper = {
           name: "String"
         }
       },
+      versionId: {
+        serializedName: "x-ms-version-id",
+        type: {
+          name: "String"
+        }
+      },
       acceptRanges: {
         serializedName: "accept-ranges",
         type: {
