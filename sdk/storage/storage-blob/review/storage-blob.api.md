@@ -454,7 +454,6 @@ export interface BlobDeleteOptions extends CommonOptions {
     conditions?: BlobRequestConditions;
     customerProvidedKey?: CpkInfo;
     deleteSnapshots?: DeleteSnapshotsOptionType;
-    snapshot?: string;
     versionId?: string;
 }
 
@@ -553,7 +552,6 @@ export interface BlobDownloadToBufferOptions extends CommonOptions {
     customerProvidedKey?: CpkInfo;
     maxRetryRequestsPerBlock?: number;
     onProgress?: (progress: TransferProgressEvent) => void;
-    snapshot?: string;
     versionId?: string;
 }
 
@@ -562,7 +560,6 @@ export interface BlobExistsOptions extends CommonOptions {
     abortSignal?: AbortSignalLike;
     conditions?: BlobRequestConditions;
     customerProvidedKey?: CpkInfo;
-    snapshot?: string;
     versionId?: string;
 }
 
@@ -625,7 +622,6 @@ export interface BlobGetPropertiesOptions extends CommonOptions {
     abortSignal?: AbortSignalLike;
     conditions?: BlobRequestConditions;
     customerProvidedKey?: CpkInfo;
-    snapshot?: string;
     versionId?: string;
 }
 
