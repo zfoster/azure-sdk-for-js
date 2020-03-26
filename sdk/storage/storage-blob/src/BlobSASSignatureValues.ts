@@ -355,7 +355,7 @@ function generateBlobSASQueryParameters20150405(
 ): SASQueryParameters {
   if (
     !blobSASSignatureValues.identifier &&
-    (!blobSASSignatureValues.permissions && !blobSASSignatureValues.expiresOn)
+    !blobSASSignatureValues.permissions && !blobSASSignatureValues.expiresOn
   ) {
     throw new RangeError(
       "Must provide 'permissions' and 'expiresOn' for Blob SAS generation when 'identifier' is not provided."
@@ -461,7 +461,7 @@ function generateBlobSASQueryParameters20181109(
 ): SASQueryParameters {
   if (
     !blobSASSignatureValues.identifier &&
-    (!blobSASSignatureValues.permissions && !blobSASSignatureValues.expiresOn)
+    !blobSASSignatureValues.permissions && !blobSASSignatureValues.expiresOn
   ) {
     throw new RangeError(
       "Must provide 'permissions' and 'expiresOn' for Blob SAS generation when 'identifier' is not provided."

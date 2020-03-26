@@ -33,7 +33,7 @@ describe("BlobClient", () => {
 
   let recorder: any;
 
-  beforeEach(async function () {
+  beforeEach(async function() {
     recorder = record(this, recorderEnvSetup);
     blobServiceClient = getBSU();
     containerName = recorder.getUniqueName("container");
@@ -45,7 +45,7 @@ describe("BlobClient", () => {
     await blockBlobClient.upload(content, content.length);
   });
 
-  afterEach(async function () {
+  afterEach(async function() {
     await containerClient.delete();
     recorder.stop();
   });
@@ -241,7 +241,10 @@ describe("BlobClient", () => {
       });
       // await delay(15 * 1000);
       properties = await blobServiceClient.getProperties();
-      assert.ok(properties.deleteRetentionPolicy!.enabled, "deleteRetentionPolicy should be enabled.");
+      assert.ok(
+        properties.deleteRetentionPolicy!.enabled,
+        "deleteRetentionPolicy should be enabled."
+      );
     }
 
     await blobClient.delete();
@@ -256,8 +259,12 @@ describe("BlobClient", () => {
     let res = await iter.next();
     let result = res.value;
     while (!res.done) {
-      if (!!result && !!result.segment && !!result.segment.blobItems &&
-        result.segment.blobItems.length > 0) {
+      if (
+        !!result &&
+        !!result.segment &&
+        !!result.segment.blobItems &&
+        result.segment.blobItems.length > 0
+      ) {
         break;
       }
       res = await iter.next();
@@ -299,8 +306,12 @@ describe("BlobClient", () => {
     res = await iter2.next();
     result = res.value;
     while (!res.done) {
-      if (!!result && !!result.segment && !!result.segment.blobItems &&
-        result.segment.blobItems.length > 0) {
+      if (
+        !!result &&
+        !!result.segment &&
+        !!result.segment.blobItems &&
+        result.segment.blobItems.length > 0
+      ) {
         break;
       }
       res = await iter2.next();
