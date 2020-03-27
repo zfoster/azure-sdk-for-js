@@ -1,6 +1,6 @@
 # Release History
 
-## 12.2.0 (2020.05)
+## 12.2.0-preview (2020.05)
 
 - Added support for blob versioning.
 
