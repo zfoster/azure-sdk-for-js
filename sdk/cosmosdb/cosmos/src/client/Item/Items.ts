@@ -266,6 +266,7 @@ export class Items {
   ): Promise<ItemResponse<T>> {
     const { resource: partitionKeyDefinition } = await this.container.readPartitionKeyDefinition();
     const partitionKey = extractPartitionKey(body, partitionKeyDefinition);
+    console.log({ partitionKey });
 
     // Generate random document id if the id is missing in the payload and
     // options.disableAutomaticIdGeneration != true
@@ -373,4 +374,37 @@ export class Items {
       ref
     );
   }
+
+  public async bulk(operations: Operation[], options?: RequestOptions) {
+    // 1 Change partitionKey to murmur hashed partitionKey range
+    const writeOperations = operations.map((operation: Operation) => {
+      const hashedKey = hashPartitionKey(operation.partitionKey);
+      return { ...operation, partitionKey: hashedKey };
+    });
+    // 2 Rewrite response to fit with headers
+    const path = getPathFromLink(this.container.url, ResourceType.item);
+
+    const response = await this.clientContext.bulk({
+      body: writeOperations,
+      partitionKeyRange: 0,
+      path,
+      resourceId: this.container.url,
+      options
+    });
+    return response;
+  }
+}
+
+function hashPartitionKey(partitionKey: string) {
+  return partitionKey;
+}
+
+export interface Operation {
+  operationType: "Create" | "Patch" | "Read" | "Upsert" | "Replace" | "Delete";
+  /* String conforming to header partition key value */
+  partitionKey?: string;
+  id?: string;
+  ifMatch?: string;
+  ifNoneMatch?: string;
+  resourceBody: object;
 }

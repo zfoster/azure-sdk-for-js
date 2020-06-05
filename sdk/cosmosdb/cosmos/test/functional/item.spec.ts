@@ -12,8 +12,10 @@ import {
   createOrUpsertItem,
   getTestDatabase,
   removeAllDatabases,
-  replaceOrUpsertItem
+  replaceOrUpsertItem,
+  getTestContainer
 } from "../common/TestHelpers";
+import { Operation } from "../../src/client/Item/Items";
 
 /**
  * @ignore
@@ -27,7 +29,7 @@ interface TestItem {
   replace?: string;
 }
 
-describe("Item CRUD", function() {
+describe.only("Item CRUD", function() {
   this.timeout(process.env.MOCHA_TIMEOUT || 10000);
   beforeEach(async function() {
     await removeAllDatabases();
@@ -210,5 +212,30 @@ describe("Item CRUD", function() {
     );
 
     await bulkDeleteItems(container, returnedDocuments, partitionKey);
+  });
+});
+
+describe("bulk item operations", function() {
+  let container: Container;
+  before(async function() {
+    container = await getTestContainer("bulk container", undefined, { partitionKey: "/key" });
+  });
+  describe("handles different operation types", function() {
+    it.only("handles create, upsert, replace, delete", async function() {
+      const operations: Operation[] = [
+        {
+          operationType: "Create",
+          partitionKey: `["A"]`,
+          resourceBody: { id: "docx12", name: "sample", key: "A" }
+        }
+        // {
+        //   operationType: "Update",
+        //   resourceBody: { id: "doc12", name: "Not Microsoft", key: "id" },
+        //   partitionKey: `["id"]`
+        // }
+      ];
+      const response = await container.items.bulk(operations);
+      assert.equal(response.code, 200);
+    });
   });
 });

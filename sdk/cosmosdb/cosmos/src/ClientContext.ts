@@ -543,6 +543,57 @@ export class ClientContext {
     return this.globalEndpointManager.getReadEndpoint();
   }
 
+  public async bulk<T, U = T>({
+    body,
+    path,
+    resourceId,
+    // partitionKeyRange,
+    options = {}
+  }: {
+    body: T;
+    path: string;
+    partitionKeyRange: number;
+    resourceId: string;
+    options?: RequestOptions;
+  }): Promise<Response<T & U & Resource>> {
+    try {
+      const request: RequestContext = {
+        globalEndpointManager: this.globalEndpointManager,
+        requestAgent: this.cosmosClientOptions.agent,
+        connectionPolicy: this.connectionPolicy,
+        method: HTTPMethod.post,
+        client: this,
+        operationType: OperationType.Batch,
+        path,
+        body,
+        resourceType: ResourceType.item,
+        resourceId,
+        plugins: this.cosmosClientOptions.plugins,
+        options
+      };
+
+      request.headers = await this.buildHeaders(request);
+      request.headers[Constants.HttpHeaders.IsBatchRequest] = "True";
+      request.headers[Constants.HttpHeaders.PartitionKey] = `["A"]`;
+      // request.headers[Constants.HttpHeaders.IsBatchAtomic] = false;
+
+      this.applySessionToken(request);
+
+      request.endpoint = await this.globalEndpointManager.resolveServiceEndpoint(
+        request.resourceType,
+        request.operationType
+      );
+      console.log(request);
+      const response = await executePlugins(request, executeRequest, PluginOn.operation);
+      console.log(JSON.stringify(response));
+      this.captureSessionToken(undefined, path, OperationType.Batch, response.headers);
+      return response;
+    } catch (err) {
+      this.captureSessionToken(err, path, OperationType.Upsert, (err as ErrorResponse).headers);
+      throw err;
+    }
+  }
+
   private captureSessionToken(
     err: ErrorResponse,
     path: string,
