@@ -390,12 +390,14 @@ export class Items {
     operations.forEach((operation: Operation) => {
       const key = hashPartitionKey(operation.resourceBody?.key || operation.partitionKey);
       let batchForKey = batches.find((batch: Batch) => {
-        let minInt;
-        minInt = parseInt(`0x${batch.min}`);
+        let minInt = parseInt(`0x${batch.min}`);
+        let maxInt = parseInt(`0x${batch.max}`);
         if (batch.min === "") {
           minInt = 0;
         }
-        const maxInt = parseInt(`0x${batch.max}`);
+        if (batch.max === "FF") {
+          maxInt = MAX_UNSIGNED_32_INTEGER;
+        }
         return isKeyInRange(minInt, maxInt, key);
       });
       if (!batchForKey) {
@@ -429,6 +431,8 @@ interface Batch {
   rangeId: string;
   operations: Operation[];
 }
+
+const MAX_UNSIGNED_32_INTEGER = 4294967295;
 
 function hashPartitionKey(partitionKey: string): number {
   return MurmurHash.hash(partitionKey, 0);

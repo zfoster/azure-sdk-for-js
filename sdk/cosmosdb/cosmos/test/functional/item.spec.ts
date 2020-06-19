@@ -241,7 +241,7 @@ describe("bulk item operations", function() {
     replaceItemId = addEntropy("item2");
     await container.items.create({
       id: replaceItemId,
-      key: "U",
+      key: "A",
       class: "2010"
     });
   });
@@ -270,9 +270,9 @@ describe("bulk item operations", function() {
         },
         {
           operationType: "Replace",
-          partitionKey: `["U"]`,
+          partitionKey: `["A"]`,
           id: replaceItemId,
-          resourceBody: { id: replaceItemId, name: "nice", key: "U" }
+          resourceBody: { id: replaceItemId, name: "nice", key: "A" }
         }
       ];
       const response = await container.items.bulk(operations);
