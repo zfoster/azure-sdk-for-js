@@ -9,10 +9,11 @@ import { extractPartitionKey } from "../../extractPartitionKey";
 import { FetchFunctionCallback, SqlQuerySpec } from "../../queryExecutionContext";
 import { QueryIterator } from "../../queryIterator";
 import { FeedOptions, RequestOptions } from "../../request";
-import { Container } from "../Container";
+import { Container, PartitionKeyRange } from "../Container";
 import { Item } from "./Item";
 import { ItemDefinition } from "./ItemDefinition";
 import { ItemResponse } from "./ItemResponse";
+import { MurmurHash } from "../../utils/murmurHash";
 
 /**
  * @ignore
@@ -266,7 +267,6 @@ export class Items {
   ): Promise<ItemResponse<T>> {
     const { resource: partitionKeyDefinition } = await this.container.readPartitionKeyDefinition();
     const partitionKey = extractPartitionKey(body, partitionKeyDefinition);
-    console.log({ partitionKey });
 
     // Generate random document id if the id is missing in the payload and
     // options.disableAutomaticIdGeneration != true
@@ -376,35 +376,79 @@ export class Items {
   }
 
   public async bulk(operations: Operation[], options?: RequestOptions) {
-    // 1 Change partitionKey to murmur hashed partitionKey range
-    const writeOperations = operations.map((operation: Operation) => {
-      const hashedKey = hashPartitionKey(operation.partitionKey);
-      return { ...operation, partitionKey: hashedKey };
+    const {
+      resources: partitionKeyRanges
+    } = await this.container.readPartitionKeyRanges().fetchAll();
+    const batches: Batch[] = partitionKeyRanges.map((keyRange: PartitionKeyRange) => {
+      return {
+        min: keyRange.minInclusive,
+        max: keyRange.maxExclusive,
+        rangeId: keyRange.id,
+        operations: []
+      };
     });
-    // 2 Rewrite response to fit with headers
+    operations.forEach((operation: Operation) => {
+      const key = hashPartitionKey(operation.resourceBody?.key || operation.partitionKey);
+      let batchForKey = batches.find((batch: Batch) => {
+        let minInt;
+        minInt = parseInt(`0x${batch.min}`);
+        if (batch.min === "") {
+          minInt = 0;
+        }
+        const maxInt = parseInt(`0x${batch.max}`);
+        return isKeyInRange(minInt, maxInt, key);
+      });
+      if (!batchForKey) {
+        // this would mean our partitionKey isn't in any of the existing ranges
+      }
+      batchForKey.operations.push(operation);
+    });
+
     const path = getPathFromLink(this.container.url, ResourceType.item);
 
-    const response = await this.clientContext.bulk({
-      body: writeOperations,
-      partitionKeyRange: 0,
-      path,
-      resourceId: this.container.url,
-      options
-    });
-    return response;
+    console.log(JSON.stringify(batches));
+    return Promise.all(
+      batches
+        .filter((batch: Batch) => batch.operations.length)
+        .map(async (batch: Batch) => {
+          return this.clientContext.bulk({
+            body: batch.operations,
+            partitionKeyRange: batch.rangeId,
+            path,
+            resourceId: this.container.url,
+            options
+          });
+        })
+    );
   }
 }
 
-function hashPartitionKey(partitionKey: string) {
-  return partitionKey;
+interface Batch {
+  min: string;
+  max: string;
+  rangeId: string;
+  operations: Operation[];
+}
+
+function hashPartitionKey(partitionKey: string): number {
+  return MurmurHash.hash(partitionKey, 0);
+}
+
+function isKeyInRange(min: number, max: number, key: number) {
+  console.log({ min, max, key });
+  const isAfterMinInclusive = min <= key;
+  const isBeforeMax = max > key;
+  console.log({ isAfterMinInclusive, isBeforeMax });
+  return isAfterMinInclusive && isBeforeMax;
 }
 
 export interface Operation {
-  operationType: "Create" | "Patch" | "Read" | "Upsert" | "Replace" | "Delete";
+  // 'Patch' is excluded to be added later
+  operationType: "Create" | "Read" | "Upsert" | "Replace" | "Delete";
   /* String conforming to header partition key value */
   partitionKey?: string;
   id?: string;
   ifMatch?: string;
   ifNoneMatch?: string;
-  resourceBody: object;
+  resourceBody?: any;
 }

@@ -64,7 +64,6 @@ async function httpRequest(requestContext: RequestContext) {
       signal,
       body: requestContext.body
     } as RequestInit);
-    console.log(response);
   } catch (error) {
     if (error.name === "AbortError") {
       // If the user passed signal caused the abort, cancel the timeout and rethrow the error

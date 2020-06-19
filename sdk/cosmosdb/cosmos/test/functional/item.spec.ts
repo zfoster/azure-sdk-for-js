@@ -13,7 +13,8 @@ import {
   getTestDatabase,
   removeAllDatabases,
   replaceOrUpsertItem,
-  getTestContainer
+  getTestContainer,
+  addEntropy
 } from "../common/TestHelpers";
 import { Operation } from "../../src/client/Item/Items";
 
@@ -29,7 +30,7 @@ interface TestItem {
   replace?: string;
 }
 
-describe.only("Item CRUD", function() {
+describe("Item CRUD", function() {
   this.timeout(process.env.MOCHA_TIMEOUT || 10000);
   beforeEach(async function() {
     await removeAllDatabases();
@@ -217,8 +218,32 @@ describe.only("Item CRUD", function() {
 
 describe("bulk item operations", function() {
   let container: Container;
+  let readItemId: string;
+  let replaceItemId: string;
+  let deleteItemId: string;
   before(async function() {
-    container = await getTestContainer("bulk container", undefined, { partitionKey: "/key" });
+    container = await getTestContainer("bulk container", undefined, {
+      partitionKey: "/key",
+      throughput: 25100
+    });
+    readItemId = addEntropy("item1");
+    await container.items.create({
+      id: readItemId,
+      key: "A",
+      class: "2010"
+    });
+    deleteItemId = addEntropy("item2");
+    await container.items.create({
+      id: deleteItemId,
+      key: "A",
+      class: "2010"
+    });
+    replaceItemId = addEntropy("item2");
+    await container.items.create({
+      id: replaceItemId,
+      key: "U",
+      class: "2010"
+    });
   });
   describe("handles different operation types", function() {
     it.only("handles create, upsert, replace, delete", async function() {
@@ -226,16 +251,33 @@ describe("bulk item operations", function() {
         {
           operationType: "Create",
           partitionKey: `["A"]`,
-          resourceBody: { id: "docx12", name: "sample", key: "A" }
+          resourceBody: { id: "doc1", name: "sample", key: "A" }
+        },
+        {
+          operationType: "Upsert",
+          partitionKey: `["A"]`,
+          resourceBody: { id: "doc2", name: "other", key: "A" }
+        },
+        {
+          operationType: "Read",
+          id: readItemId,
+          partitionKey: `["A"]`
+        },
+        {
+          operationType: "Delete",
+          id: deleteItemId,
+          partitionKey: `["A"]`
+        },
+        {
+          operationType: "Replace",
+          partitionKey: `["U"]`,
+          id: replaceItemId,
+          resourceBody: { id: replaceItemId, name: "nice", key: "U" }
         }
-        // {
-        //   operationType: "Update",
-        //   resourceBody: { id: "doc12", name: "Not Microsoft", key: "id" },
-        //   partitionKey: `["id"]`
-        // }
       ];
       const response = await container.items.bulk(operations);
-      assert.equal(response.code, 200);
+      console.log(response);
+      // assert.equal(response.code, 200);
     });
   });
 });

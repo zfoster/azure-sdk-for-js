@@ -547,12 +547,12 @@ export class ClientContext {
     body,
     path,
     resourceId,
-    // partitionKeyRange,
+    partitionKeyRange,
     options = {}
   }: {
     body: T;
     path: string;
-    partitionKeyRange: number;
+    partitionKeyRange: string;
     resourceId: string;
     options?: RequestOptions;
   }): Promise<Response<T & U & Resource>> {
@@ -574,8 +574,8 @@ export class ClientContext {
 
       request.headers = await this.buildHeaders(request);
       request.headers[Constants.HttpHeaders.IsBatchRequest] = "True";
-      request.headers[Constants.HttpHeaders.PartitionKey] = `["A"]`;
-      // request.headers[Constants.HttpHeaders.IsBatchAtomic] = false;
+      request.headers[Constants.HttpHeaders.PartitionKeyRangeID] = partitionKeyRange;
+      request.headers[Constants.HttpHeaders.IsBatchAtomic] = false;
 
       this.applySessionToken(request);
 
@@ -583,9 +583,8 @@ export class ClientContext {
         request.resourceType,
         request.operationType
       );
-      console.log(request);
       const response = await executePlugins(request, executeRequest, PluginOn.operation);
-      console.log(JSON.stringify(response));
+      console.log(response);
       this.captureSessionToken(undefined, path, OperationType.Batch, response.headers);
       return response;
     } catch (err) {
