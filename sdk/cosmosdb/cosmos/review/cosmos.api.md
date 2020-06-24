@@ -204,6 +204,8 @@ export const Constants: {
         EnableScriptLogging: string;
         ScriptLogResults: string;
         ALLOW_MULTIPLE_WRITES: string;
+        IsBatchRequest: string;
+        IsBatchAtomic: string;
     };
     WritableLocations: string;
     ReadableLocations: string;
@@ -571,6 +573,10 @@ export class ItemResponse<T extends ItemDefinition> extends ResourceResponse<T &
 // @public
 export class Items {
     constructor(container: Container, clientContext: ClientContext);
+    // Warning: (ae-forgotten-export) The symbol "Operation" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    bulk(operations: Operation[], options?: RequestOptions): Promise<import("../../request").Response<Operation[] & import("..").Resource>[]>;
     changeFeed(partitionKey: string | number | boolean, changeFeedOptions?: ChangeFeedOptions): ChangeFeedIterator<any>;
     changeFeed(changeFeedOptions?: ChangeFeedOptions): ChangeFeedIterator<any>;
     changeFeed<T>(partitionKey: string | number | boolean, changeFeedOptions?: ChangeFeedOptions): ChangeFeedIterator<T>;
@@ -659,6 +665,8 @@ export class Offers {
 
 // @public (undocumented)
 export enum OperationType {
+    // (undocumented)
+    Batch = "batch",
     // (undocumented)
     Create = "create",
     // (undocumented)

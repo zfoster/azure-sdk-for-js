@@ -15,7 +15,7 @@ import { endpoint, masterKey } from "./_testConfig";
 import { DatabaseRequest } from "../../src/client/Database/DatabaseRequest";
 import { ContainerRequest } from "../../src/client/Container/ContainerRequest";
 
-const defaultClient = new CosmosClient({ endpoint, key: masterKey });
+export const defaultClient = new CosmosClient({ endpoint, key: masterKey });
 
 export function addEntropy(name: string): string {
   return name + getEntropy();

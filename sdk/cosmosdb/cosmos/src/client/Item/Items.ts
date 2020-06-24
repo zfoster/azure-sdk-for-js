@@ -13,7 +13,16 @@ import { Container, PartitionKeyRange } from "../Container";
 import { Item } from "./Item";
 import { ItemDefinition } from "./ItemDefinition";
 import { ItemResponse } from "./ItemResponse";
-import { MurmurHash } from "../../utils/murmurHash";
+import {
+  Batch,
+  isKeyInRange,
+  MAX_128_BIT_INTEGER,
+  Operation,
+  hasResource,
+  hashv1PartitionKey,
+  hashv2PartitionKey
+  // hashv2PartitionKey
+} from "../../utils/batch";
 
 /**
  * @ignore
@@ -379,6 +388,8 @@ export class Items {
     const {
       resources: partitionKeyRanges
     } = await this.container.readPartitionKeyRanges().fetchAll();
+    console.log({ partitionKeyRanges });
+    const { resource: definition } = await this.container.getPartitionKeyDefinition();
     const batches: Batch[] = partitionKeyRanges.map((keyRange: PartitionKeyRange) => {
       return {
         min: keyRange.minInclusive,
@@ -388,15 +399,29 @@ export class Items {
       };
     });
     operations.forEach((operation: Operation) => {
-      const key = hashPartitionKey(operation.resourceBody?.key || operation.partitionKey);
+      const partitionProp = definition.paths[0].replace("/", "");
+      const isV2 = definition.version && definition.version === 2;
+      const toHashKey = hasResource(operation)
+        ? // todo get object property from partition key definition
+          (operation.resourceBody as any)[partitionProp]
+        : operation.partitionKey
+            .replace("[", "")
+            .replace("]", "")
+            .replace("'", "");
+      const key = isV2 ? hashv2PartitionKey(toHashKey) : hashv1PartitionKey(toHashKey);
       let batchForKey = batches.find((batch: Batch) => {
-        let minInt = parseInt(`0x${batch.min}`);
-        let maxInt = parseInt(`0x${batch.max}`);
+        console.log({ min: batch.min, max: batch.max });
+        let minInt: bigint;
+        let maxInt: bigint;
         if (batch.min === "") {
-          minInt = 0;
+          minInt = 0n;
+        } else {
+          minInt = BigInt(`0x${batch.min}`);
         }
         if (batch.max === "FF") {
-          maxInt = MAX_UNSIGNED_32_INTEGER;
+          maxInt = MAX_128_BIT_INTEGER;
+        } else {
+          maxInt = BigInt(`0x${batch.max}`);
         }
         return isKeyInRange(minInt, maxInt, key);
       });
@@ -423,36 +448,4 @@ export class Items {
         })
     );
   }
-}
-
-interface Batch {
-  min: string;
-  max: string;
-  rangeId: string;
-  operations: Operation[];
-}
-
-const MAX_UNSIGNED_32_INTEGER = 4294967295;
-
-function hashPartitionKey(partitionKey: string): number {
-  return MurmurHash.hash(partitionKey, 0);
-}
-
-function isKeyInRange(min: number, max: number, key: number) {
-  console.log({ min, max, key });
-  const isAfterMinInclusive = min <= key;
-  const isBeforeMax = max > key;
-  console.log({ isAfterMinInclusive, isBeforeMax });
-  return isAfterMinInclusive && isBeforeMax;
-}
-
-export interface Operation {
-  // 'Patch' is excluded to be added later
-  operationType: "Create" | "Read" | "Upsert" | "Replace" | "Delete";
-  /* String conforming to header partition key value */
-  partitionKey?: string;
-  id?: string;
-  ifMatch?: string;
-  ifNoneMatch?: string;
-  resourceBody?: any;
 }

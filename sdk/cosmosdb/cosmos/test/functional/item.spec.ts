@@ -13,10 +13,11 @@ import {
   getTestDatabase,
   removeAllDatabases,
   replaceOrUpsertItem,
-  getTestContainer,
-  addEntropy
+  // getTestContainer,
+  addEntropy,
+  defaultClient
 } from "../common/TestHelpers";
-import { Operation } from "../../src/client/Item/Items";
+import { Operation } from "../../src/utils/batch";
 
 /**
  * @ignore
@@ -218,14 +219,22 @@ describe("Item CRUD", function() {
 
 describe("bulk item operations", function() {
   let container: Container;
+  // let v2Container: Container;
   let readItemId: string;
   let replaceItemId: string;
   let deleteItemId: string;
   before(async function() {
-    container = await getTestContainer("bulk container", undefined, {
-      partitionKey: "/key",
-      throughput: 25100
-    });
+    const database = await defaultClient.database("zach-test");
+    // v1
+    container = await database.container("small-pk");
+    // v2Container = await database.container("large-pk");
+    // container = await getTestContainer("bulk container", undefined, {
+    //   partitionKey: {
+    //     paths: ["/key"],
+    //     version: 1
+    //   },
+    //   throughput: 25100
+    // });
     readItemId = addEntropy("item1");
     await container.items.create({
       id: readItemId,
