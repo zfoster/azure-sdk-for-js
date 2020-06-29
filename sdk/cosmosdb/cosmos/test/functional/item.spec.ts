@@ -255,7 +255,7 @@ describe("bulk item operations", function() {
     });
   });
   describe("handles different operation types", function() {
-    it.only("handles create, upsert, replace, delete", async function() {
+    it("handles create, upsert, replace, delete", async function() {
       const operations: Operation[] = [
         {
           operationType: "Create",

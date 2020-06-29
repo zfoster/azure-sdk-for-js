@@ -18,11 +18,13 @@ import {
   isKeyInRange,
   MAX_128_BIT_INTEGER,
   Operation,
-  hasResource,
-  hashv1PartitionKey,
-  hashv2PartitionKey
+  hasResource
+  // hashv1PartitionKey,
+  // hashv2PartitionKey
   // hashv2PartitionKey
 } from "../../utils/batch";
+import { hashV1PartitionKey } from "../../utils/hashing/v1";
+import { hashV2PartitionKey } from "../../utils/hashing/v2";
 
 /**
  * @ignore
@@ -408,7 +410,7 @@ export class Items {
             .replace("[", "")
             .replace("]", "")
             .replace("'", "");
-      const key = isV2 ? hashv2PartitionKey(toHashKey) : hashv1PartitionKey(toHashKey);
+      const key = isV2 ? hashV2PartitionKey(toHashKey) : hashV1PartitionKey(toHashKey);
       let batchForKey = batches.find((batch: Batch) => {
         console.log({ min: batch.min, max: batch.max });
         let minInt: bigint;
@@ -423,7 +425,7 @@ export class Items {
         } else {
           maxInt = BigInt(`0x${batch.max}`);
         }
-        return isKeyInRange(minInt, maxInt, key);
+        return isKeyInRange(minInt, maxInt, parseInt(key, 16));
       });
       if (!batchForKey) {
         // this would mean our partitionKey isn't in any of the existing ranges
